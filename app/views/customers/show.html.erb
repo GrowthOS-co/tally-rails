@@ -1,0 +1,42 @@
+<% content_for :title, "#{@customer.name} · Tally" %>
+
+<div class="page-header">
+  <div>
+    <h1><%= @customer.name %></h1>
+    <p class="muted"><%= "#{@customer.company} · " if @customer.company %><%= @customer.email %></p>
+  </div>
+  <div class="actions">
+    <%= link_to "Edit", edit_customer_path(@customer), class: "button" %>
+    <%= link_to "New invoice", new_invoice_path(customerId: @customer.id), class: "button button-primary" %>
+  </div>
+</div>
+
+<section>
+  <h2>Invoices</h2>
+  <% if @invoices.empty? %>
+    <p class="muted">No invoices yet.</p>
+  <% else %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Invoice</th>
+          <th>Issued</th>
+          <th>Due</th>
+          <th>Status</th>
+          <th class="numeric">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invoices.each do |invoice| %>
+          <tr>
+            <td><%= link_to invoice.number, invoice, class: "strong-link" %></td>
+            <td><%= short_date(invoice.issue_date) %></td>
+            <td><%= short_date(invoice.due_date) %></td>
+            <td><%= status_badge(invoice.display_status) %></td>
+            <td class="numeric"><%= money(invoice.total_cents) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

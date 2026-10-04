@@ -1,0 +1,46 @@
+<%= form_with model: invoice, class: "form" do |form| %>
+  <%= render "shared/errors", record: invoice %>
+
+  <div class="form-row">
+    <%= form.label :customer_id, class: "field" do %>
+      Customer
+      <%= form.select :customer_id,
+            Customer.order(:name).map { |customer| [ customer.company ? "#{customer.name} (#{customer.company})" : customer.name, customer.id ] },
+            { prompt: "Choose a customer" }, required: true %>
+    <% end %>
+
+    <%= form.label :issue_date, class: "field" do %>
+      Issue date
+      <%= form.date_field :issue_date, required: true %>
+    <% end %>
+
+    <%= form.label :due_date, class: "field" do %>
+      Due date
+      <%= form.date_field :due_date, required: true %>
+    <% end %>
+  </div>
+
+  <fieldset class="line-items" data-controller="line-items">
+    <legend>Line items</legend>
+    <div data-line-items-target="rows">
+      <% rows = invoice.line_items.reject(&:marked_for_destruction?) %>
+      <% rows = [ LineItem.new(quantity: 1) ] if rows.empty? %>
+      <%= form.fields_for :line_items, rows, include_id: false do |item_form| %>
+        <%= render "line_item_fields", form: item_form %>
+      <% end %>
+    </div>
+    <template data-line-items-target="template">
+      <%= form.fields_for :line_items, LineItem.new(quantity: 1), child_index: "NEW_ROW", include_id: false do |item_form| %>
+        <%= render "line_item_fields", form: item_form %>
+      <% end %>
+    </template>
+    <button type="button" class="link-button" data-action="line-items#add">+ Add line item</button>
+  </fieldset>
+
+  <%= form.label :notes, class: "field" do %>
+    <span>Notes <span class="muted">(optional)</span></span>
+    <%= form.text_area :notes, rows: 3 %>
+  <% end %>
+
+  <%= form.submit submit_label, class: "button button-primary" %>
+<% end %>

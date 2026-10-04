@@ -1,0 +1,6 @@
+<div class="line-item" data-line-items-target="row">
+  <%= form.text_field :description, required: true, placeholder: "Description", "aria-label": "Description" %>
+  <%= form.number_field :quantity, min: 1, step: 1, required: true, "aria-label": "Quantity" %>
+  <%= form.text_field :unit_price, inputmode: "decimal", pattern: "\\d+(\\.\\d{1,2})?", required: true, placeholder: "0.00", "aria-label": "Unit price" %>
+  <button type="button" class="link-button remove" data-line-items-target="remove" data-action="line-items#remove">Remove</button>
+</div>

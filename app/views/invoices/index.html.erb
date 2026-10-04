@@ -1,0 +1,42 @@
+<% content_for :title, "Invoices · Tally" %>
+
+<div class="page-header">
+  <h1>Invoices</h1>
+  <%= link_to "New invoice", new_invoice_path, class: "button button-primary" %>
+</div>
+
+<nav class="pills">
+  <%= link_to "All", invoices_path, class: [ "pill", { "pill-active": @status.nil? } ] %>
+  <% Invoice::DISPLAY_STATUSES.each do |status| %>
+    <%= link_to status.capitalize, invoices_path(status:), class: [ "pill", { "pill-active": @status == status } ] %>
+  <% end %>
+</nav>
+
+<% if @invoices.empty? %>
+  <p class="muted">No invoices.</p>
+<% else %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Invoice</th>
+        <th>Customer</th>
+        <th>Issued</th>
+        <th>Due</th>
+        <th>Status</th>
+        <th class="numeric">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @invoices.each do |invoice| %>
+        <tr>
+          <td><%= link_to invoice.number, invoice, class: "strong-link" %></td>
+          <td><%= invoice.customer.name %></td>
+          <td><%= short_date(invoice.issue_date) %></td>
+          <td><%= short_date(invoice.due_date) %></td>
+          <td><%= status_badge(invoice.display_status) %></td>
+          <td class="numeric"><%= money(invoice.total_cents) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

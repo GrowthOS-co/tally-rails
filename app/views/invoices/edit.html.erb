@@ -1,0 +1,10 @@
+<% content_for :title, "Edit #{@invoice.number} · Tally" %>
+
+<h1>Edit <%= @invoice.number %></h1>
+
+<% if @invoice.draft? %>
+  <%= render "form", invoice: @invoice, submit_label: "Save changes" %>
+<% else %>
+  <p class="muted">Only draft invoices can be edited. This one is <%= @invoice.status %>.</p>
+  <%= link_to "Back to the invoice", @invoice %>
+<% end %>

@@ -1,0 +1,71 @@
+<% content_for :title, "#{@invoice.number} · Tally" %>
+
+<div class="page-header">
+  <div>
+    <div class="title-row">
+      <h1><%= @invoice.number %></h1>
+      <%= status_badge(@invoice.display_status) %>
+    </div>
+    <p class="muted">
+      Billed to <%= link_to @invoice.customer.name, @invoice.customer %><%= ", #{@invoice.customer.company}" if @invoice.customer.company %>
+    </p>
+  </div>
+  <div class="actions">
+    <% if @invoice.draft? %>
+      <%= link_to "Edit", edit_invoice_path(@invoice), class: "button" %>
+      <%= button_to "Delete", @invoice, method: :delete, class: "button button-danger" %>
+      <%= button_to "Mark as sent", mark_sent_invoice_path(@invoice), class: "button button-primary" %>
+    <% elsif @invoice.sent? %>
+      <%= button_to "Mark as paid", mark_paid_invoice_path(@invoice), class: "button button-success" %>
+    <% end %>
+  </div>
+</div>
+
+<dl class="card details">
+  <div>
+    <dt>Issued</dt>
+    <dd><%= short_date(@invoice.issue_date) %></dd>
+  </div>
+  <div>
+    <dt>Due</dt>
+    <dd><%= short_date(@invoice.due_date) %></dd>
+  </div>
+  <div>
+    <dt>Paid</dt>
+    <dd><%= @invoice.paid_date ? short_date(@invoice.paid_date) : "—" %></dd>
+  </div>
+</dl>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th class="numeric">Quantity</th>
+      <th class="numeric">Unit price</th>
+      <th class="numeric">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @invoice.line_items.each do |item| %>
+      <tr>
+        <td><%= item.description %></td>
+        <td class="numeric"><%= item.quantity %></td>
+        <td class="numeric"><%= money(item.unit_price_cents) %></td>
+        <td class="numeric"><%= money(item.amount_cents) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" class="numeric strong">Total</td>
+      <td class="numeric strong"><%= money(@invoice.total_cents) %></td>
+    </tr>
+  </tfoot>
+</table>
+
+<% if @invoice.notes %>
+  <section>
+    <h2 class="notes-label">Notes</h2>
+    <p class="notes"><%= @invoice.notes %></p>
+  </section>
+<% end %>

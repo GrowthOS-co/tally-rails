@@ -1,0 +1,50 @@
+<% content_for :title, "Dashboard · Tally" %>
+
+<h1>Dashboard</h1>
+
+<div class="cards">
+  <div class="card">
+    <p class="card-label">Outstanding</p>
+    <p class="card-value"><%= money(@dashboard.outstanding_cents) %></p>
+  </div>
+  <div class="card">
+    <p class="card-label">Overdue</p>
+    <p class="card-value"><%= money(@dashboard.overdue_cents) %></p>
+    <p class="card-detail"><%= pluralize(@dashboard.overdue_invoices.size, "invoice") %></p>
+  </div>
+  <div class="card">
+    <p class="card-label">Paid this month</p>
+    <p class="card-value"><%= money(@dashboard.paid_this_month_cents) %></p>
+  </div>
+</div>
+
+<section>
+  <h2>Overdue invoices</h2>
+  <% if @dashboard.overdue_invoices.empty? %>
+    <p class="muted">Nothing is overdue.</p>
+  <% else %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Invoice</th>
+          <th>Customer</th>
+          <th>Due</th>
+          <th class="numeric">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @dashboard.overdue_invoices.each do |invoice| %>
+          <tr>
+            <td><%= link_to invoice.number, invoice, class: "strong-link" %></td>
+            <td><%= invoice.customer.name %></td>
+            <td>
+              <%= short_date(invoice.due_date) %>
+              <span class="late">(<%= (@dashboard.today - invoice.due_date).to_i %> days late)</span>
+            </td>
+            <td class="numeric"><%= money(invoice.total_cents) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

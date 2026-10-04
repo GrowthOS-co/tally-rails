@@ -1,0 +1,5 @@
+<% content_for :title, "Edit #{@customer.name} · Tally" %>
+
+<h1>Edit <%= @customer.name %></h1>
+
+<%= render "form", customer: @customer, submit_label: "Save changes" %>
